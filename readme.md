@@ -1,3 +1,5 @@
+
+
 # INI_db.cs
 
 ## Install
@@ -97,4 +99,37 @@ for (int idx_group = 0; idx_group < k_group_num; idx_group++)
     }
 }
 ```
+
+### How about json?
+
+Save json to `json.ini`
+
+```c#
+dynamic json_save = new JObject();
+json_save.Boolean = false;
+json_save.Integer = 200;
+json_save.Float = 234.567;
+json_save.String = "Hello World";
+json_save.Array = new JArray(1, 2, 3, 4, 5);
+db_tool.Save("json.ini", "Group1", "Json", json_save.ToString(Formatting.None)); //Must use Formatting.None 
+```
+
+`json.ini`
+
+```ini
+[Group1]
+Json = {"Boolean":false,"Integer":200,"Float":234.567,"String":"Hello World","Array":[1,2,3,4,5]}
+```
+
+Load json from `json.ini`
+
+```c#
+JObject json_default = new JObject();
+JObject json_value = db_tool.Load("json_db.ini", "Group1", "Json", json_default);
+Console.WriteLine("json_value = {0}", json_value.ToString());
+```
+
+
+
+
 

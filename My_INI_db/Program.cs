@@ -1,5 +1,7 @@
 ﻿using AIM.Modules;
 using IniParser.Model;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +14,8 @@ namespace My_INI_db
     {
         static void Main(string[] args)
         {
+            // 整個main都是使用INI_db的範例
+
             // db
             INI_db db_tool = new INI_db();           
             string db_path = "db.ini";
@@ -76,7 +80,19 @@ namespace My_INI_db
             System.Console.WriteLine($"data.ini load... {watch_save.ElapsedMilliseconds} ms");
 
             // How about json
+            // Save json to .ini
+            dynamic json_data = new JObject();
+            json_data.Boolean = false;
+            json_data.Integer = 200;
+            json_data.Float = 234.567;
+            json_data.String = "Hello World";
+            json_data.Array = new JArray(1, 2, 3, 4, 5);
+            db_tool.Save("json.ini", "Group1", "Json", json_data.ToString(Formatting.None)); //Must use Formatting.None 
 
+            // Load json from .ini
+            JObject json_default = new JObject();
+            JObject json_value = db_tool.Load("json_db.ini", "Group1", "Json", json_default);
+            Console.WriteLine("json_value = {0}", json_value.ToString());
 
             Console.ReadKey();
         }
