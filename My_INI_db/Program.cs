@@ -75,6 +75,8 @@ namespace My_INI_db
             System.Console.WriteLine($"data.ini save... {watch_save.ElapsedMilliseconds} ms");
             System.Console.WriteLine($"data.ini load... {watch_save.ElapsedMilliseconds} ms");
 
+            // How about json
+
 
             Console.ReadKey();
         }
