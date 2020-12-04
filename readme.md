@@ -39,7 +39,7 @@ String = Hello
 
 By this method a preset value can be specified when reading parameters. Avoid parameter does not exist.
 
-```csharp
+```C#
 INI_db db = new INI_db();
 string db_path = "db.ini";
 
