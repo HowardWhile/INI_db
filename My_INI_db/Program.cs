@@ -56,7 +56,7 @@ namespace My_INI_db
             db_tool.Save("data.ini", db_mem);
             watch_save.Stop();
 
-            // LoadDB
+            // Load DB
             System.Diagnostics.Stopwatch watch_load = new System.Diagnostics.Stopwatch();
 
             watch_load.Start();
