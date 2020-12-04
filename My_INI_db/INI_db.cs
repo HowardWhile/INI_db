@@ -2,6 +2,7 @@
 using IniParser.Model;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -10,9 +11,9 @@ using System.Threading.Tasks;
 namespace AIM.Modules
 {
     class INI_db
-    {        
+    {
         public void Save(string db, string group, string parameter, string value)
-        {            
+        {
             var parser = new FileIniDataParser();
             if (File.Exists(db))
             {
@@ -48,16 +49,8 @@ namespace AIM.Modules
                 parser.WriteFile(db, data);
             }
         }
-
-        public void Save(string db, string group, string parameter, bool value)
-        {
-            this.Save(db, group, parameter, Convert.ToString(value));
-        }
-        public void Save(string db, string group, string parameter, int value)
-        {
-            this.Save(db, group, parameter, Convert.ToString(value));
-        }
-        public void Save(string db, string group, string parameter, double value)
+        
+        public void Save<T>(string db, string group, string parameter, T value)
         {
             this.Save(db, group, parameter, Convert.ToString(value));
         }
@@ -87,52 +80,34 @@ namespace AIM.Modules
 
             return data[group][parameter];
         }
-
-        public string Load(string db, string group, string parameter, string default_value)
+                
+        public T Load<T>(string db, string group, string parameter, T default_value)
         {
-            string value = this.Load(db, group, parameter);
-            return value == null ? default_value : value;
-        }
-
-        public int Load(string db, string group, string parameter, int default_value)
-        {
-            int value;
+            T value;
             return this.TryLoad(db, group, parameter, out value) ? value : default_value;
-        }
+        }        
 
-        public bool Load(string db, string group, string parameter, bool default_value)
+        public bool TryLoad<T>(string db, string group, string parameter, out T value)
         {
-            bool value;
-            return this.TryLoad(db, group, parameter, out value) ? value : default_value;
-        }
-
-        public double Load(string db, string group, string parameter, double default_value)
-        {
-            double value;
-            return this.TryLoad(db, group, parameter, out value) ? value : default_value;
-        }
-
-        public bool TryLoad(string db, string group, string parameter, out string value)
-        {
-            value = this.Load(db, group, parameter);
-            return value == null ? false : true;
-        }
-
-        public bool TryLoad(string db, string group, string parameter, out int value)
-        {
+            // https://stackoverflow.com/questions/2961656/generic-tryparse
             string value_str = this.Load(db, group, parameter);
-            return int.TryParse(value_str, out value); ;
-        }
-
-        public bool TryLoad(string db, string group, string parameter, out bool value)
-        {
-            string value_str = this.Load(db, group, parameter);
-            return bool.TryParse(value_str, out value); ;
-        }
-        public bool TryLoad(string db, string group, string parameter, out double value)
-        {
-            string value_str = this.Load(db, group, parameter);
-            return double.TryParse(value_str, out value); ;
+            try
+            {
+                var converter = TypeDescriptor.GetConverter(typeof(T));
+                if (converter != null)
+                {
+                    // Cast ConvertFromString(string text) : object to (T)
+                    value = (T)converter.ConvertFromString(value_str);
+                    return true;
+                }
+                value = default(T);
+                return false;
+            }
+            catch (Exception)
+            {
+                value = default(T);
+                return false;
+            }
         }
 
     }

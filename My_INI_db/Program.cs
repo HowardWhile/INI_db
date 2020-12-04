@@ -33,11 +33,6 @@ namespace My_INI_db
             else
                 Console.WriteLine("Load Failed");
 
-            if (db.TryLoad(db_path, "Group1", "Float_1", out oValue))
-                Console.WriteLine($"Load Success, data = {oValue}");
-            else
-                Console.WriteLine("Load Failed");
-
 
             Console.ReadKey();
         }
