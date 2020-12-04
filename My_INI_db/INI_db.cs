@@ -1,25 +1,22 @@
 ﻿using IniParser;
 using IniParser.Model;
 using System;
-using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AIM.Modules
 {
     class INI_db
-    {        
-        public void Save(string db, string group, string parameter, string value)
-        {            
+    {
+        public void Save(string db_path, string group, string parameter, string value)
+        {
             var parser = new FileIniDataParser();
-            if (File.Exists(db))
+            if (File.Exists(db_path))
             {
                 IniData data;
                 try
                 {
-                    data = parser.ReadFile(db);
+                    data = parser.ReadFile(db_path);
                 }
                 catch (Exception ex)
                 {
@@ -31,12 +28,12 @@ namespace AIM.Modules
 
                 }
                 data[group][parameter] = value;
-                parser.WriteFile(db, data);
+                parser.WriteFile(db_path, data);
             }
             else
             {
 
-                string directory = Path.GetDirectoryName(db);
+                string directory = Path.GetDirectoryName(db_path);
 
                 if (directory != "" && !Directory.Exists(directory))
                 {
@@ -45,32 +42,25 @@ namespace AIM.Modules
 
                 IniData data = new IniData();
                 data[group][parameter] = value;
-                parser.WriteFile(db, data);
+                parser.WriteFile(db_path, data);
             }
         }
-
-        public void Save(string db, string group, string parameter, bool value)
+        
+        public void Save<T>(string db_path, string group, string parameter, T value)
         {
-            this.Save(db, group, parameter, Convert.ToString(value));
-        }
-        public void Save(string db, string group, string parameter, int value)
-        {
-            this.Save(db, group, parameter, Convert.ToString(value));
-        }
-        public void Save(string db, string group, string parameter, double value)
-        {
-            this.Save(db, group, parameter, Convert.ToString(value));
+            this.Save(db_path, group, parameter, Convert.ToString(value));
         }
 
-        public string Load(string db, string group, string parameter)
+
+        public string Load(string db_path, string group, string parameter)
         {
             IniData data;
-            if (File.Exists(db))
+            if (File.Exists(db_path))
             {
                 try
                 {
                     var parser = new FileIniDataParser();
-                    data = parser.ReadFile(db);
+                    data = parser.ReadFile(db_path);
                 }
                 catch (Exception ex)
                 {
@@ -86,54 +76,130 @@ namespace AIM.Modules
             }
 
             return data[group][parameter];
+        }        
+                
+        public T Load<T>(string db_path, string group, string parameter, T default_value)
+        {
+            T value;
+            return this.TryLoad(db_path, group, parameter, out value) ? value : default_value;
+        }        
+
+        public bool TryLoad<T>(string db_path, string group, string parameter, out T value)
+        {
+            // https://stackoverflow.com/questions/2961656/generic-tryparse
+            string value_str = this.Load(db_path, group, parameter);
+            try
+            {
+                var converter = TypeDescriptor.GetConverter(typeof(T));
+                if (converter != null)
+                {
+                    // Cast ConvertFromString(string text) : object to (T)
+                    value = (T)converter.ConvertFromString(value_str);
+                    return true;
+                }
+                value = default(T);
+                return false;
+            }
+            catch (Exception)
+            {
+                value = default(T);
+                return false;
+            }
         }
 
-        public string Load(string db, string group, string parameter, string default_value)
+        public IniData Load(string db_path)
         {
-            string value = this.Load(db, group, parameter);
-            return value == null ? default_value : value;
+            IniData data;
+            if (File.Exists(db_path))
+            {
+                try
+                {
+                    var parser = new FileIniDataParser();
+                    data = parser.ReadFile(db_path);
+                }
+                catch (Exception ex)
+                {
+                    System.Console.WriteLine(
+                        $">>{ex.Message}\r\n" +
+                        $"{ex.ToString()}");
+                    data = new IniData();
+                }
+            }
+            else
+            {
+                data = new IniData();
+            }
+
+            return data;
+        }
+        
+        public bool TryLoad<T>(IniData db_mem, string group, string parameter, out T value)
+        {
+            string value_str = db_mem[group][parameter];
+            try
+            {
+                var converter = TypeDescriptor.GetConverter(typeof(T));
+                if (converter != null)
+                {
+                    // Cast ConvertFromString(string text) : object to (T)
+                    value = (T)converter.ConvertFromString(value_str);
+                    return true;
+                }
+                value = default(T);
+                return false;
+            }
+            catch (Exception)
+            {
+                value = default(T);
+                return false;
+            }
         }
 
-        public int Load(string db, string group, string parameter, int default_value)
+        public T Load<T>(IniData db_mem, string group, string parameter, T default_value)
         {
-            int value;
-            return this.TryLoad(db, group, parameter, out value) ? value : default_value;
+            T value;
+            return this.TryLoad(db_mem, group, parameter, out value) ? value : default_value;
         }
 
-        public bool Load(string db, string group, string parameter, bool default_value)
+        public void Insert<T>(IniData db_mem, string group, string parameter, T value)
         {
-            bool value;
-            return this.TryLoad(db, group, parameter, out value) ? value : default_value;
+            db_mem[group][parameter] = Convert.ToString(value);
         }
 
-        public double Load(string db, string group, string parameter, double default_value)
+        public void Save(string db_path, IniData db_mem)
         {
-            double value;
-            return this.TryLoad(db, group, parameter, out value) ? value : default_value;
-        }
+            var parser = new FileIniDataParser();
+            if (File.Exists(db_path))
+            {
+                IniData data;
+                try
+                {
+                    data = parser.ReadFile(db_path);
+                }
+                catch (Exception ex)
+                {
+                    System.Console.WriteLine(
+                        $">>{ex.Message}\r\n" +
+                        $"{ex.ToString()}");
 
-        public bool TryLoad(string db, string group, string parameter, out string value)
-        {
-            value = this.Load(db, group, parameter);
-            return value == null ? false : true;
-        }
+                    data = new IniData();
+                }
+                data.Merge(db_mem);
+                parser.WriteFile(db_path, data);
+            }
+            else
+            {
 
-        public bool TryLoad(string db, string group, string parameter, out int value)
-        {
-            string value_str = this.Load(db, group, parameter);
-            return int.TryParse(value_str, out value); ;
-        }
+                string directory = Path.GetDirectoryName(db_path);
 
-        public bool TryLoad(string db, string group, string parameter, out bool value)
-        {
-            string value_str = this.Load(db, group, parameter);
-            return bool.TryParse(value_str, out value); ;
-        }
-        public bool TryLoad(string db, string group, string parameter, out double value)
-        {
-            string value_str = this.Load(db, group, parameter);
-            return double.TryParse(value_str, out value); ;
-        }
+                if (directory != "" && !Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
 
+                IniData data = new IniData();
+                parser.WriteFile(db_path, db_mem);
+            }
+        }
     }
 }
