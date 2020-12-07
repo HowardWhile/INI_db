@@ -1,12 +1,18 @@
+
+
 # INI_db.cs
 
 ## Install
 
-`INI_db.cs` is base on `ini-parser`, so you must add ini-parser to your project by nuget manager.
+`INI_db.cs` is base on `ini-parser` & `Newronsoft.json`, so you must add they to your project by nuget manager.
 
 ![image-20201204092302802](pic/readme/image-20201204092302802.png)
 
+![image-20201207093435152](pic/readme/image-20201207093435152.png)
+
 https://www.nuget.org/packages/ini-parser/
+
+https://www.nuget.org/packages/Newtonsoft.Json/
 
 Then you can import `INI_db.cs` with `Join existing item` .
 
@@ -39,24 +45,21 @@ String = Hello
 
 By this method a preset value can be specified when reading parameters. Avoid parameter does not exist.
 
-```csharp
+```C#
 INI_db db = new INI_db();
 string db_path = "db.ini";
 
 int value_default = 123;
-System.Console.WriteLine("data = {0}", db_tool.Load(db_path, "Group1", "Integer", value_default));
-System.Console.WriteLine("data = {0}", db_tool.Load(db_path, "Group1", "Integer_1", value_default));
-
-//data = 100
-//data = 123
+System.Console.WriteLine("data = {0}", db_tool.Load(db_path, "Group1", "Integer", value_default)); // data = 100
+System.Console.WriteLine("data = {0}", db_tool.Load(db_path, "Group1", "Integer_1", value_default)); // data = 123
 ```
 
-Or try to load like this method
+Or try to load method by this way.
 
 ```c#
 double oValue;
 if (db_tool.TryLoad(db_path, "Group1", "Float", out oValue))
-    Console.WriteLine($"Load Success, data = {oValue}");
+    Console.WriteLine($"Load Success, data = {oValue}"); // Load Success, data = 123.321
 else
     Console.WriteLine("Load Failed");
 ```
@@ -97,4 +100,40 @@ for (int idx_group = 0; idx_group < k_group_num; idx_group++)
     }
 }
 ```
+
+### How about json?
+
+You can save json to `json.ini` by this method.
+
+```c#
+INI_db db_tool = new INI_db();
+
+dynamic json_data = new JObject();
+json_data.Boolean = false;
+json_data.Integer = 200;
+json_data.Float = 234.567;
+json_data.String = "Hello World";
+json_data.Array = new JArray(1, 2, 3, 4, 5);
+
+db_tool.Save("json.ini", "Group1", "Json", json_data);
+```
+
+The `json.ini` file will look like this:
+
+```ini
+[Group1]
+Json = {"Boolean":false,"Integer":200,"Float":234.567,"String":"Hello World","Array":[1,2,3,4,5]}
+```
+
+Load json from `json.ini`
+
+```c#
+JObject j_default = new JObject();
+JObject j = db_tool.Load("json.ini", "Group1", "Json", j_default);
+Console.WriteLine("json_value = {0}", j.ToString());
+```
+
+
+
+# _(┐「ε:)__
 
