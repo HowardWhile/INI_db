@@ -24,51 +24,6 @@ namespace My_INI_db
             Console.ReadKey();
         }
 
-        private static void example_json()
-        {
-            INI_db db_tool = new INI_db();
-            // Save json to .ini
-            dynamic json_data = new JObject();
-            json_data.Boolean = false;
-            json_data.Integer = 200;
-            json_data.Float = 234.567;
-            json_data.String = "Hello World";
-            json_data.Array = new JArray(1, 2, 3, 4, 5);
-            db_tool.Save("json.ini", "Group1", "Json", json_data);
-
-            // Load json from .ini
-            JObject j_default = new JObject();
-            JObject j = db_tool.Load("json.ini", "Group1", "Json", j_default);
-            Console.WriteLine("json_value = {0}", j.ToString());
-        }
-
-        private static void example_simply()
-        {
-
-            // db_tool
-            INI_db db_tool = new INI_db();
-            string db_path = "db.ini";
-
-            // save example
-            db_tool.Save(db_path, "Group1", "Boolean", true);
-            db_tool.Save(db_path, "Group1", "Integer", 100);
-            db_tool.Save(db_path, "Group1", "Float", 123.321);
-            db_tool.Save(db_path, "Group1", "String", "Hello");
-
-
-            // load example
-            int value_default = 123;
-            System.Console.WriteLine("data = {0}", db_tool.Load(db_path, "Group1", "Integer", value_default));
-            System.Console.WriteLine("data = {0}", db_tool.Load(db_path, "Group1", "Integer_1", value_default));
-
-            // tryload example 
-            double oValue;
-            if (db_tool.TryLoad(db_path, "Group1", "Float", out oValue))
-                Console.WriteLine($"Load Success, data = {oValue}");
-            else
-                Console.WriteLine("Load Failed");
-        }
-
         private static void example_db()
         {
             INI_db db_tool = new INI_db();
@@ -111,6 +66,51 @@ namespace My_INI_db
             System.Console.WriteLine($"data.ini load... {watch_load.ElapsedMilliseconds} ms");
         }
 
+        private static void example_simply()
+        {
+
+            // db_tool
+            INI_db db_tool = new INI_db();
+            string db_path = "db.ini";
+
+            // save example
+            db_tool.Save(db_path, "Group1", "Boolean", true);
+            db_tool.Save(db_path, "Group1", "Integer", 100);
+            db_tool.Save(db_path, "Group1", "Float", 123.321);
+            db_tool.Save(db_path, "Group1", "String", "Hello");
+
+
+            // load example
+            int value_default = 123;
+            System.Console.WriteLine("data = {0}", db_tool.Load(db_path, "Group1", "Integer", value_default));
+            System.Console.WriteLine("data = {0}", db_tool.Load(db_path, "Group1", "Integer_1", value_default));
+
+            // tryload example 
+            double oValue;
+            if (db_tool.TryLoad(db_path, "Group1", "Float", out oValue))
+                Console.WriteLine($"Load Success, data = {oValue}");
+            else
+                Console.WriteLine("Load Failed");
+        }
+
+        private static void example_json()
+        {
+            INI_db db_tool = new INI_db();
+            // Save json to .ini
+            dynamic json_data = new JObject();
+            json_data.Boolean = false;
+            json_data.Integer = 200;
+            json_data.Float = 234.567;
+            json_data.String = "Hello World";
+            json_data.Array = new JArray(1, 2, 3, 4, 5);
+            db_tool.Save("json.ini", "Group1", "Json", json_data);
+
+            // Load json from .ini
+            JObject j_default = new JObject();
+            JObject j = db_tool.Load("json.ini", "Group1", "Json", j_default);
+            Console.WriteLine("json_value = {0}", j.ToString());
+        }
+                     
         private static void example_json_db()
         {
             INI_db db_tool = new INI_db();
@@ -154,7 +154,6 @@ namespace My_INI_db
             System.Console.WriteLine($"json_db.ini save... {watch_save.ElapsedMilliseconds} ms");
             System.Console.WriteLine($"json_db.ini load... {watch_load.ElapsedMilliseconds} ms");
         }
-
-        
+                
     }
 }
