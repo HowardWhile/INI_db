@@ -46,19 +46,16 @@ INI_db db = new INI_db();
 string db_path = "db.ini";
 
 int value_default = 123;
-System.Console.WriteLine("data = {0}", db_tool.Load(db_path, "Group1", "Integer", value_default));
-System.Console.WriteLine("data = {0}", db_tool.Load(db_path, "Group1", "Integer_1", value_default));
-
-//data = 100
-//data = 123
+System.Console.WriteLine("data = {0}", db_tool.Load(db_path, "Group1", "Integer", value_default)); // data = 100
+System.Console.WriteLine("data = {0}", db_tool.Load(db_path, "Group1", "Integer_1", value_default)); // data = 123
 ```
 
-Or try to load like this method
+Or try to load method by this way.
 
 ```c#
 double oValue;
 if (db_tool.TryLoad(db_path, "Group1", "Float", out oValue))
-    Console.WriteLine($"Load Success, data = {oValue}");
+    Console.WriteLine($"Load Success, data = {oValue}"); // Load Success, data = 123.321
 else
     Console.WriteLine("Load Failed");
 ```
@@ -102,19 +99,22 @@ for (int idx_group = 0; idx_group < k_group_num; idx_group++)
 
 ### How about json?
 
-Save json to `json.ini`
+You can save json to `json.ini` by this method.
 
 ```c#
-dynamic json_save = new JObject();
-json_save.Boolean = false;
-json_save.Integer = 200;
-json_save.Float = 234.567;
-json_save.String = "Hello World";
-json_save.Array = new JArray(1, 2, 3, 4, 5);
-db_tool.Save("json.ini", "Group1", "Json", json_save.ToString(Formatting.None)); //Must use Formatting.None 
+INI_db db_tool = new INI_db();
+
+dynamic json_data = new JObject();
+json_data.Boolean = false;
+json_data.Integer = 200;
+json_data.Float = 234.567;
+json_data.String = "Hello World";
+json_data.Array = new JArray(1, 2, 3, 4, 5);
+
+db_tool.Save("json.ini", "Group1", "Json", json_data);
 ```
 
-`json.ini`
+The `json.ini` file will look like this:
 
 ```ini
 [Group1]
@@ -124,9 +124,9 @@ Json = {"Boolean":false,"Integer":200,"Float":234.567,"String":"Hello World","Ar
 Load json from `json.ini`
 
 ```c#
-JObject json_default = new JObject();
-JObject json_value = db_tool.Load("json_db.ini", "Group1", "Json", json_default);
-Console.WriteLine("json_value = {0}", json_value.ToString());
+JObject j_default = new JObject();
+JObject j = db_tool.Load("json.ini", "Group1", "Json", j_default);
+Console.WriteLine("json_value = {0}", j.ToString());
 ```
 
 

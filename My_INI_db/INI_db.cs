@@ -1,5 +1,6 @@
 ﻿using IniParser;
 using IniParser.Model;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.ComponentModel;
@@ -49,6 +50,10 @@ namespace AIM.Modules
         public void Save<T>(string db_path, string group, string parameter, T value)
         {
             this.Save(db_path, group, parameter, Convert.ToString(value));
+        }
+        public void Save(string db_path, string group, string parameter, JObject value)
+        {
+            this.Save(db_path, group, parameter, value.ToString(Formatting.None));
         }
         public void Save(string db_path, IniData db_mem)
         {
@@ -145,6 +150,24 @@ namespace AIM.Modules
                 return false;
             }
         }
+        public bool TryLoad(IniData db_mem, string group, string parameter, out JObject value)
+        {
+            string value_str = db_mem[group][parameter];
+            try
+            {
+                value = JObject.Parse(value_str);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine(
+                    $"{ex.Message}\r\n" +
+                    $">>{ex.ToString()}");
+                value = new JObject();
+                return false;
+            }
+        }
+
         public string Load(string db_path, string group, string parameter)
         {
             IniData data;
@@ -210,13 +233,18 @@ namespace AIM.Modules
             T value;
             return this.TryLoad(db_mem, group, parameter, out value) ? value : default_value;
         }
-
+        public JObject Load(IniData db_mem, string group, string parameter, JObject default_value)
+        {
+            JObject value;
+            return this.TryLoad(db_mem, group, parameter, out value) ? value : default_value;
+        }
         public void Insert<T>(IniData db_mem, string group, string parameter, T value)
         {
             db_mem[group][parameter] = Convert.ToString(value);
         }
-
-        
-              
+        public void Insert(IniData db_mem, string group, string parameter, JObject value)
+        {
+            db_mem[group][parameter] = value.ToString(Formatting.None);
+        }
     }
 }
