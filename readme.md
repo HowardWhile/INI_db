@@ -4,11 +4,15 @@
 
 ## Install
 
-`INI_db.cs` is base on `ini-parser`, so you must add ini-parser to your project by nuget manager.
+`INI_db.cs` is base on `ini-parser` & `Newronsoft.json`, so you must add they to your project by nuget manager.
 
 ![image-20201204092302802](pic/readme/image-20201204092302802.png)
 
+![image-20201207093435152](pic/readme/image-20201207093435152.png)
+
 https://www.nuget.org/packages/ini-parser/
+
+https://www.nuget.org/packages/Newtonsoft.Json/
 
 Then you can import `INI_db.cs` with `Join existing item` .
 
@@ -131,5 +135,5 @@ Console.WriteLine("json_value = {0}", j.ToString());
 
 
 
-
+# _(┐「ε:)__
 
