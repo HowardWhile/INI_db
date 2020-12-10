@@ -46,7 +46,7 @@ String = Hello
 By this method a preset value can be specified when reading parameters. Avoid parameter does not exist.
 
 ```C#
-INI_db db = new INI_db();
+INI_db db_tool = new INI_db();
 string db_path = "db.ini";
 
 int value_default = 123;
